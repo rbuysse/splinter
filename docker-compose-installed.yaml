@@ -22,6 +22,7 @@ services:
       dockerfile: cli/Dockerfile-installed-${DISTRO}
       args:
       - REPO_VERSION=${REPO_VERSION}
+      - COMPILE_ARGS=${COMPILE_ARGS}
     image: ${REGISTRY}${NAMESPACE}splinter-cli:${ISOLATION_ID}
     container_name: splinter-cli
 
@@ -31,6 +32,7 @@ services:
       dockerfile: splinterd/Dockerfile-installed-${DISTRO}
       args:
       - REPO_VERSION=${REPO_VERSION}
+      - COMPILE_ARGS=${COMPILE_ARGS}
     image: ${REGISTRY}${NAMESPACE}splinterd:${ISOLATION_ID}
     container_name: splinterd
 
@@ -42,6 +44,7 @@ services:
       dockerfile: examples/private_xo/Dockerfile-installed-${DISTRO}
       args:
       - REPO_VERSION=${REPO_VERSION}
+      - COMPILE_ARGS=${COMPILE_ARGS}
     image: ${REGISTRY}${NAMESPACE}private_xo:${ISOLATION_ID}
     container_name: private_xo
 
@@ -51,6 +54,7 @@ services:
       dockerfile: examples/private_counter/cli/Dockerfile-installed-${DISTRO}
       args:
       - REPO_VERSION=${REPO_VERSION}
+      - COMPILE_ARGS=${COMPILE_ARGS}
     image: ${REGISTRY}${NAMESPACE}private_counter_cli:${ISOLATION_ID}
     container_name: private_counter_cli
 
@@ -60,6 +64,7 @@ services:
       dockerfile: examples/private_counter/service/Dockerfile-installed-${DISTRO}
       args:
       - REPO_VERSION=${REPO_VERSION}
+      - COMPILE_ARGS=${COMPILE_ARGS}
     image: ${REGISTRY}${NAMESPACE}private_counter_service:${ISOLATION_ID}
     container_name: private_counter_service
 
@@ -71,6 +76,7 @@ services:
       dockerfile: examples/gameroom/daemon/Dockerfile-installed-${DISTRO}
       args:
       - REPO_VERSION=${REPO_VERSION}
+      - COMPILE_ARGS=${COMPILE_ARGS}
     image: ${REGISTRY}${NAMESPACE}gameroomd:${ISOLATION_ID}
     container_name: gameroomd
 
