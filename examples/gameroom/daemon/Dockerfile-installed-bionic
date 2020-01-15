@@ -19,8 +19,15 @@ COPY examples/gameroom/database /build/examples/gameroom/database
 COPY examples/gameroom/daemon/ /build/examples/gameroom/daemon
 COPY libsplinter /build/libsplinter
 
-# Build the project
+# Build the gameroomd package
 WORKDIR /build/examples/gameroom/daemon
+ARG REPO_VERSION
+ARG CARGO_ARGS
+RUN sed -i -e "0,/version.*$/ s/version.*$/version\ =\ \"${REPO_VERSION}\"/" Cargo.toml
+RUN cargo deb --deb-version $REPO_VERSION $CARGO_ARGS
+
+# Build the gameroom-cli package
+WORKDIR /build/examples/gameroom/cli
 ARG REPO_VERSION
 ARG CARGO_ARGS
 RUN sed -i -e "0,/version.*$/ s/version.*$/version\ =\ \"${REPO_VERSION}\"/" Cargo.toml
