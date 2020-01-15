@@ -19,11 +19,13 @@ volumes:
   key-registry:
   acme-var:
   bubba-var:
+  acme-db:
+  bubba-db:
 
 services:
 
     generate-key-registry:
-        image: splintercommunity/splinter-cli:master
+        image: splintercommunity/splinter-cli:0.3.8
         volumes:
           - key-registry:/key_registry
           - ./key_registry:/input
@@ -39,7 +41,7 @@ services:
           "
 
     db-acme:
-      image: splintercommunity/gameroom-database:master
+      image: splintercommunity/gameroom-database:0.3.8
       container_name: db-acme
       restart: always
       expose:
@@ -52,9 +54,10 @@ services:
         POSTGRES_DB: gameroom
       volumes:
         - "./database/tables:/docker-entrypoint-initdb.d"
+        - "acme-db:/var/lib/postgresql/data/"
 
     gameroom-app-acme:
-      image: splintercommunity/gameroom-app-acme:master
+      image: splintercommunity/gameroom-app-acme:0.3.8
       container_name: gameroom-app-acme
       environment:
         - VUE_APP_BRAND=acme
@@ -64,7 +67,7 @@ services:
         - '8080:80'
 
     gameroomd-acme:
-        image: splintercommunity/gameroomd:master
+        image: splintercommunity/gameroomd:0.3.8
         container_name: gameroomd-acme
         volumes:
           - cargo-registry:/root/.cargo/registry
@@ -92,7 +95,7 @@ services:
               -b gameroomd-acme:8000 --splinterd-url http://splinterd-node-acme:8085
           "
     splinterd-node-acme:
-      image: splintercommunity/splinterd:master
+      image: splintercommunity/splinterd:0.3.8
       container_name: splinterd-node-acme
       expose:
         - 8080
@@ -124,7 +127,7 @@ services:
         "
 
     db-bubba:
-      image: splintercommunity/gameroom-database:master
+      image: splintercommunity/gameroom-database:0.3.8
       container_name: db-bubba
       restart: always
       expose:
@@ -137,9 +140,10 @@ services:
         POSTGRES_DB: gameroom
       volumes:
         - "./database/tables:/docker-entrypoint-initdb.d"
+        - "bubba-db:/var/lib/postgresql/data/"
 
     gameroom-app-bubba:
-      image: splintercommunity/gameroom-app-bubba:master
+      image: splintercommunity/gameroom-app-bubba:0.3.8
       container_name: gameroom-app-bubba
       environment:
         - VUE_APP_BRAND=bubba
@@ -149,7 +153,7 @@ services:
         - '8081:80'
 
     gameroomd-bubba:
-        image: splintercommunity/gameroomd:master
+        image: splintercommunity/gameroomd:0.3.8
         container_name: gameroomd-bubba
         volumes:
           - cargo-registry:/root/.cargo/registry
@@ -178,7 +182,7 @@ services:
           "
 
     splinterd-node-bubba:
-      image: splintercommunity/splinterd:master
+      image: splintercommunity/splinterd:0.3.8
       container_name: splinterd-node-bubba
       expose:
         - 8080

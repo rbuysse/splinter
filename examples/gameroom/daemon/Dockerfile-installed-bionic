@@ -15,6 +15,8 @@
 FROM splintercommunity/splinter-dev as BUILDER
 
 # Copy over source files
+COPY Cargo.toml /build/Cargo.toml
+COPY examples/gameroom/cli /build/examples/gameroom/cli
 COPY examples/gameroom/database /build/examples/gameroom/database
 COPY examples/gameroom/daemon/ /build/examples/gameroom/daemon
 COPY libsplinter /build/libsplinter
@@ -45,7 +47,7 @@ RUN apt-get update \
     postgresql-client \
     unzip
 
-COPY --from=BUILDER /build/target/debian/gameroom*.deb /tmp
+COPY --from=BUILDER /build/target/debian/gameroom*.deb /tmp/
 
 RUN apt-get update \
  && dpkg --unpack /tmp/gameroom*.deb \
