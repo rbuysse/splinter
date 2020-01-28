@@ -71,7 +71,6 @@ RUN USER=root cargo new --bin examples/private_xo
 RUN USER=root cargo new --bin services/health
 
 # Copy over splinter files
-COPY Cargo.toml /build/Cargo.toml
 COPY cli/Cargo.toml /build/cli/Cargo.toml
 COPY client/Cargo.toml /build/client/Cargo.toml
 COPY libsplinter/build.rs /build/libsplinter/build.rs
