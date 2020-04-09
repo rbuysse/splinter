@@ -14,9 +14,19 @@
 
 # -------------=== splinterd docker build ===-------------
 
-FROM splintercommunity/splinter-dev:v2 as BUILDER
+FROM splintercommunity/splinter-dev:v3 as BUILDER
 
 ENV SPLINTER_FORCE_PANDOC=true
+
+# Create new workspace Cargo.toml
+RUN echo '[workspace]\n\
+\n\
+members = [\n\
+    "cli",\n\
+    "libsplinter",\n\
+    "splinterd",\n\
+    "services/health",\n\
+]' > /build/Cargo.toml
 
 COPY cli /build/cli
 COPY libsplinter /build/libsplinter

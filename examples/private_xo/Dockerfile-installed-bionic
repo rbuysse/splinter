@@ -12,7 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM splintercommunity/splinter-dev:v2 as BUILDER
+FROM splintercommunity/splinter-dev:v3 as BUILDER
+
+# Create new workspace Cargo.toml
+RUN echo '[workspace]\n\
+\n\
+members = [\n\
+    "libsplinter",\n\
+    "examples/private_xo",\n\
+]' > /build/Cargo.toml
 
 COPY libsplinter /build/libsplinter
 COPY examples/private_xo /build/examples/private_xo

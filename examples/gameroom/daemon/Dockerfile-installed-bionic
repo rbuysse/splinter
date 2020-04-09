@@ -12,7 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM splintercommunity/splinter-dev:v2 as BUILDER
+FROM splintercommunity/splinter-dev:v3 as BUILDER
+
+# Create new workspace Cargo.toml
+RUN echo '[workspace]\n\
+\n\
+members = [\n\
+    "cli",\n\
+    "splinterd",\n\
+    "libsplinter",\n\
+    "examples/gameroom/cli",\n\
+    "examples/gameroom/database",\n\
+    "examples/gameroom/daemon",\n\
+]' > /build/Cargo.toml
 
 # Copy over source files
 

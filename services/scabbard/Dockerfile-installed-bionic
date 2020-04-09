@@ -12,10 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM splintercommunity/splinter-dev:v2 as BUILDER
+FROM splintercommunity/splinter-dev:v3 as BUILDER
+
+# Create new workspace Cargo.toml
+RUN echo '[workspace]\n\
+\n\
+members = [\n\
+    "libsplinter",\n\
+    "services/scabbard",\n\
+]' > /build/Cargo.toml
 
 # Copy over source files
-COPY Cargo.toml /build/Cargo.toml
 COPY libsplinter /build/libsplinter
 COPY services/scabbard /build/services/scabbard
 
