@@ -20,7 +20,7 @@ use crate::collections::BiHashMap;
 use super::error::PeerUpdateError;
 
 // Default intial value for how long to wait before retrying a peers endpoints
-const INITIAL_RETRY_FREQUENCY: u64 = 10;
+pub const INITIAL_RETRY_FREQUENCY: u64 = 10;
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum PeerStatus {
