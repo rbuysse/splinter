@@ -19,9 +19,10 @@ volumes:
   registry:
   acme-var:
   bubba-var:
+  gamma-var:
   acme-db:
   bubba-db:
-
+  gamma-db:
 services:
 
     generate-registry:
@@ -41,6 +42,7 @@ services:
               # generate keys
               splinter admin keygen alice -d /registry
               splinter admin keygen bob -d /registry
+              splinter admin keygen glen -d /registry
               # check if splinterd-node-acme is available
               while [[ $$(curl --write-out %{http_code} --silent --output /dev/null http://splinterd-node-acme:8085/status) -ne 200 ]] ; do
                  >&2 echo \"splinterd is unavailable - sleeping\"
@@ -48,6 +50,11 @@ services:
               done
               # check if splinterd-node-bubba is available
               while [[ $$(curl --write-out %{http_code} --silent --output /dev/null http://splinterd-node-bubba:8085/status) -ne 200 ]] ; do
+                 >&2 echo \"splinterd is unavailable - sleeping\"
+                 sleep 1
+              done
+              # check if splinterd-node-gamma is available
+              while [[ $$(curl --write-out %{http_code} --silent --output /dev/null http://splinterd-node-gamma:8085/status) -ne 200 ]] ; do
                  >&2 echo \"splinterd is unavailable - sleeping\"
                  sleep 1
               done
@@ -62,7 +69,13 @@ services:
                 --file /registry/registry.yaml \
                 --key-file /registry/bob.pub \
                 --metadata organization='Bubba Bakery'
+              splinter registry build \
+                http://splinterd-node-gamma:8085 \
+                --file /registry/registry.yaml \
+                --key-file /registry/glen.pub \
+                --metadata organization='Generic Gamma'
             fi
+            tail -f /dev/null
           "
 
     registry-server:
@@ -75,6 +88,15 @@ services:
           - "8099:80"
       volumes:
         - registry:/usr/local/apache2/htdocs
+
+    scabbard-cli:
+      image: splintercommunity/scabbard-cli:experimental
+      container_name: scabbard-cli
+      restart: always
+      volumes:
+        - registry:/registry
+      command: tail -f /dev/null
+
 
     db-acme:
       image: gameroom-database
@@ -321,3 +343,120 @@ services:
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: admin
         POSTGRES_DB: splinter
+    db-gamma:
+      image: gameroom-database
+      container_name: db-gamma
+      build:
+        context: ../..
+        dockerfile: ./examples/gameroom/database/Dockerfile-installed
+        args:
+          - REPO_VERSION=${REPO_VERSION}
+      restart: always
+      volumes:
+        - gamma-db:/var/lib/postgresql/data
+      expose:
+        - 5432
+      ports:
+          - "5437:5432"
+      environment:
+        POSTGRES_USER: gameroom
+        POSTGRES_PASSWORD: gameroom_example
+        POSTGRES_DB: gameroom
+    gameroom-app-gamma:
+      build:
+        context: ../..
+        dockerfile: ./examples/gameroom/gameroom-app/Dockerfile-installed
+        args:
+          VUE_APP_BRAND: "generic"
+          REPO_VERSION: ${REPO_VERSION}
+      image: gameroom-app-gamma
+      container_name: gameroom-app-gamma
+      environment:
+        - VUE_APP_BRAND=generic
+      expose:
+        - 80
+      ports:
+        - '8082:80'
+    gameroomd-gamma:
+        image: gameroomd
+        container_name: gameroomd-gamma
+        build:
+          context: ../..
+          dockerfile: ./examples/gameroom/daemon/Dockerfile-installed-${DISTRO}
+          args:
+            - CARGO_ARGS=${CARGO_ARGS}
+            - REPO_VERSION=${REPO_VERSION}
+        volumes:
+          - cargo-registry:/root/.cargo/registry
+        expose:
+          - 8000
+        ports:
+          - "8002:8000"
+        depends_on:
+          - splinterd-node-gamma
+        command: |
+          bash -c "
+            # we need to wait for the db to have started.
+            until PGPASSWORD=gameroom_example psql -h db-gamma -U gameroom -c '\q'; do
+                >&2 echo \"Database is unavailable - sleeping\"
+                sleep 1
+            done
+            # check if splinterd-node-gamma is available
+            while [[ $$(curl --write-out %{http_code} --silent --output /dev/null http://splinterd-node-gamma:8085/status) -ne 200 ]] ; do
+               >&2 echo \"splinterd is unavailable - sleeping\"
+               sleep 1
+            done
+            gameroom -vv database migrate --database-url postgres://gameroom:gameroom_example@db-gamma:5432/gameroom
+            gameroomd -vv --database-url postgres://gameroom:gameroom_example@db-gamma:5432/gameroom \
+              -b gameroomd-gamma:8000 --splinterd-url http://splinterd-node-gamma:8085
+          "
+    splinterd-node-gamma:
+      image: splinterd-node
+      container_name: splinterd-node-gamma
+      build:
+        context: ../..
+        dockerfile: splinterd/Dockerfile-installed-${DISTRO}
+        args:
+          - CARGO_ARGS=${CARGO_ARGS}
+          - REPO_VERSION=${REPO_VERSION}
+      expose:
+        - 8080
+        - 8044
+        - 8945
+        - 8085
+      ports:
+        - 8090:8085
+      volumes:
+        - ./splinterd-config:/configs
+        - gamma-var:/var/lib/splinter
+      entrypoint: |
+        bash -c "
+          until PGPASSWORD=admin psql -h splinterd-db-gamma -U admin -d splinter -c '\q'; do
+            >&2 echo \"Database is unavailable - sleeping\"
+            sleep 1
+          done && \
+          splinter database migrate -C postgres://admin:admin@splinterd-db-gamma:5432/splinter && \
+          splinter cert generate --skip && \
+          splinterd -c ./configs/splinterd-node-gamma.toml -vv \
+              --database postgres://admin:admin@splinterd-db-gamma:5432/splinter \
+              --service-endpoint tcp://0.0.0.0:8043 \
+              --network-endpoints tcps://0.0.0.0:8044 \
+              --advertised-endpoints tcps://splinterd-node-gamma:8044 \
+              --rest-api-endpoint 0.0.0.0:8085 \
+              --registries http://registry-server:80/registry.yaml \
+              --tls-insecure \
+              --enable-biome
+        "
+    splinterd-db-gamma:
+      image: postgres
+      container_name: splinterd-db-gamma
+      restart: always
+      expose:
+        - 5432
+      ports:
+        - "5436:5432"
+      environment:
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: admin
+        POSTGRES_DB: splinter
+
