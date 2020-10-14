@@ -21,6 +21,9 @@ env:
     - NAMESPACE="splintercommunity/"
     - VERSION=AUTO_STRICT
 
+git:
+  depth: false
+
 before_install:
   - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/1.23.2/docker-compose-`uname -s`-`uname -m` > docker-compose
@@ -33,59 +36,6 @@ addons:
 
 jobs:
   include:
-    - stage: Lint Gameroom Client
+    - stage: Get Version
       script:
-        - docker-compose -f docker/compose/run-lint.yaml up --abort-on-container-exit lint-gameroom-client
-
-    - stage: Run Lint/Clippy on Splinter
-      script:
-        - docker-compose -f docker/compose/run-lint.yaml up --abort-on-container-exit lint-splinter
-    - stage: Run Lint/Clippy on Splinter
-      script:
-        - docker-compose -f docker/compose/run-lint.yaml up --abort-on-container-exit clippy-splinter
-
-    - stage: Run Splinter/Gameroom Unit Tests
-      before_script:
-        - set -e
-      script:
-        - docker-compose -f tests/test-splinter.yaml up --abort-on-container-exit unit-test-splinter
-    - stage: Run Splinter/Gameroom Unit Tests
-      before_script:
-        - set -e
-      script:
-        - docker-compose -f examples/gameroom/tests/docker-compose.yaml up --abort-on-container-exit
-    - stage: Run Splinter/Gameroom Unit Tests
-      before_script:
-        - set -e
-      script:
-        - docker-compose -f examples/gameroom/tests/cypress/docker-compose.yaml up --abort-on-container-exit
-
-    - stage: Cron only
-      if: type = cron
-      script: docker-compose -f tests/test-splinter-cron.yaml up --abort-on-container-exit unit-test-splinter
-
-    - stage: Publish artifacts
-      language: generic
-      before_deploy:
-        - docker login -u splintercommunity -p $DOCKER_TOKEN
-      deploy:
-        - provider: script
-          script: bash ci/publish-docker master
-          on:
-            branch: master
-        - provider: script
-          script: bash ci/publish-docker
-          on:
-            tags: true
-            all_branches: true
-        - provider: script
-          script: bash ci/publish-crates
-          on:
-            tags: true
-            all_branches: true
-
-notifications:
-  slack:
-    secure: $SLACK_TOKEN
-    on_success: change
-    on_failure: always
+        - bash bin/get_version
