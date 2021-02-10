@@ -1,0 +1,26 @@
+repository:
+  # See https://developer.github.com/v3/repos/#edit for all available settings.
+  name: splinter
+  description: A privacy-focused distributed platform - start splintering your
+    network into circuits!
+  homepage: https://www.splinter.dev
+  topics: privacy, distributed application, smart contract, blockchain
+  private: false
+  has_issues: true
+  has_projects: false
+  has_wiki: false
+  has_downloads: false
+  default_branch: main
+  allow_squash_merge: false
+  allow_merge_commit: true
+  allow_rebase_merge: true
+
+branches:
+  - name: main
+    protection:
+      required_pull_request_reviews:
+        required_approving_review_count: 2
+        dismiss_stale_reviews: true
+      required_status_checks: null
+      enforce_admins: true
+      restrictions: null
