@@ -19,7 +19,7 @@ services:
 
   unit-test-splinter:
     build:
-      context: ../
+      context: ../../
       dockerfile: tests/Dockerfile
     image: test-splinter:${ISOLATION_ID}
     environment:

@@ -175,7 +175,7 @@ services:
       volumes:
         - acme-keys:/keys
         - acme-var:/var/lib/splinter
-        - ./splinterd-config:/configs
+        - ../examples/gameroom/splinterd-config:/configs
       entrypoint: |
         bash -c "
           if [ ! -f /keys/acme.priv ]
@@ -300,7 +300,7 @@ services:
           ipv4_address: 172.28.3.4
       volumes:
         - bubba-keys:/keys
-        - ./splinterd-config:/configs
+        - ../examples/gameroom/splinterd-config:/configs
         - bubba-var:/var/lib/splinter
       entrypoint: |
         bash -c "

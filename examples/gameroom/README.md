@@ -29,7 +29,7 @@ This demo requires [Docker Engine](https://docs.docker.com/engine)
 and [Docker Compose](https://docs.docker.com/compose).
 
 **Note:** To run the demo with prebuilt images from Docker Hub, replace
-`docker-compose.yaml` with `docker-compose-dockerhub.yaml` in all commands
+`gameroom.yaml` with `gameroom-dockerhub.yaml` in all commands
 below.
 
 1. Clone the [splinter repository](https://github.com/Cargill/splinter).
@@ -38,7 +38,7 @@ below.
    directory:
 
     ```
-    docker-compose -f examples/gameroom/docker-compose.yaml up --build
+    docker-compose -f docker/compose/gameroom.yaml up --build
     ```
 
     **Note:** To run Gameroom with experimental features enabled, set an
@@ -52,7 +52,7 @@ below.
    Alice's private key:
 
     ```
-    $ docker-compose -f examples/gameroom/docker-compose.yaml run generate-registry bash
+    $ docker-compose -f docker/compose/gameroom.yaml run generate-registry bash
     root@<container-id>:/# cat /registry/alice.priv
     <the private key value>
     root@<container-id>:/#
@@ -69,5 +69,5 @@ below.
 1. When you are finished, shut down the demo with the following command:
 
      ```
-     docker-compose -f examples/gameroom/docker-compose.yaml down
+     docker-compose -f docker/compose/gameroom.yaml down
      ```

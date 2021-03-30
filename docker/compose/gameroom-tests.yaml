@@ -19,10 +19,10 @@ services:
   gameroomd-integration-test:
       image: gameroomd-integration-test
       build:
-        context: ../../..
+        context: ../../
         dockerfile: examples/gameroom/tests/Dockerfile
       volumes:
-          - ../../..:/project/splinter
+          - ../..:/project/splinter
       expose:
         - 8002
       ports:
@@ -56,9 +56,9 @@ services:
     ports:
       - 8090:8085
     volumes:
-      - .:/project/tests
+      - ../../examples/gameroom/tests:/project/tests
     build:
-      context: ../../..
+      context: ../../
       dockerfile: splinterd/Dockerfile-installed-${DISTRO}
       args:
         - CARGO_ARGS=${CARGO_ARGS}
@@ -95,5 +95,5 @@ services:
       POSTGRES_PASSWORD: gameroom_test
       POSTGRES_DB: gameroom_test
     build:
-      context: ../../..
+      context: ../../
       dockerfile: ./examples/gameroom/database/Dockerfile-installed

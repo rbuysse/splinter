@@ -22,7 +22,7 @@ services:
 
   gameroom-app-test:
     build:
-      context: ../../../..
+      context: ../..
       dockerfile: examples/gameroom/gameroom-app/Dockerfile-installed
       args:
         VUE_APP_BRAND: "acme"
@@ -34,7 +34,7 @@ services:
 
   gameroom-app-integration-test:
     build:
-      context: ../
+      context: ../..
       dockerfile: ./cypress/Dockerfile
     image: gameroom-app-integration-test
     container_name: gameroom-app-integration-test
@@ -51,7 +51,7 @@ services:
     image: gameroomd
     container_name: gameroomd-acme
     build:
-      context: ../../../..
+      context: ../..
       dockerfile: ./examples/gameroom/daemon/Dockerfile-installed-${DISTRO}
       args:
         - CARGO_ARGS=${CARGO_ARGS}
@@ -97,10 +97,10 @@ services:
     ports:
       - 8090:8085
     volumes:
-      - ../:/project/tests
+      - ../../examples/gameroom/tests/cypress:/project/tests
       - cypress-keys:/keys
     build:
-      context: ../../../..
+      context: ../..
       dockerfile: splinterd/Dockerfile-installed-${DISTRO}
       args:
         - CARGO_ARGS=${CARGO_ARGS}
@@ -147,7 +147,7 @@ services:
     image: gameroom-database
     container_name: db-cypress-test
     build:
-      context: ../../../..
+      context: ../..
       dockerfile: ./examples/gameroom/database/Dockerfile-installed
     restart: always
     expose:
@@ -159,4 +159,4 @@ services:
       POSTGRES_PASSWORD: gameroom_test
       POSTGRES_DB: gameroom_test
     volumes:
-      - "../../database/tables:/docker-entrypoint-initdb.d"
+      - "../../examples/gameroom/database/tables:/docker-entrypoint-initdb.d"

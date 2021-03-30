@@ -69,8 +69,8 @@ ci-lint-splinter:
 ci-test:
     #!/usr/bin/env sh
     set -e
-    docker-compose -f tests/test-splinter.yaml build unit-test-splinter
-    docker-compose -f tests/test-splinter.yaml up \
+    docker-compose -f docker/compose/test-splinter.yaml build unit-test-splinter
+    docker-compose -f docker/compose/test-splinter.yaml up \
       --abort-on-container-exit unit-test-splinter
 
 ci-test-gameroom: test-gameroom
@@ -117,6 +117,6 @@ test:
 test-gameroom:
     #!/usr/bin/env sh
     set -e
-    docker-compose -f examples/gameroom/tests/docker-compose.yaml build
-    docker-compose -f examples/gameroom/tests/docker-compose.yaml up \
+    docker-compose -f docker/compose/gameroom-tests.yaml build
+    docker-compose -f docker/compose/gameroom-tests.yaml up \
     --abort-on-container-exit

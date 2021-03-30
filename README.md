@@ -34,16 +34,16 @@ For example, to build only the splinter library, navigate to
 `libsplinter`, then run `cargo build`.
 
 To build Splinter using Docker, run
-`docker-compose -f docker-compose-installed.yaml build` from the root
+`docker-compose -f docker/compose/splinter-installed.yaml build` from the root
 directory. This command builds Docker images for all of the Splinter
 components, including `libsplinter` (the main library), `splinterd`
 (the splinter daemon), the CLI, the client, and all examples in the `examples`
 directory.
 
 To build individual components using Docker, run
-`docker-compose -f docker-compose-installed.yaml build <component>`
+`docker-compose -f docker/compose/splinter-installed.yaml build <component>`
 from the root directory. For example, to build only the splinter daemon,
-run `docker-compose -f docker-compose-installed.yaml build splinterd`.
+run `docker-compose -f docker/compose/splinter-installed.yaml build splinterd`.
 
 To use Docker to build Splinter with experimental features enabled, set an
 environment variable in your shell before running the build commands. For

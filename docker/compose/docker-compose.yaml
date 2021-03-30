@@ -27,7 +27,7 @@ services:
       - ./splinterd/sample_configs:/configs
       - ./splinterd/sample_registries:/registries
     build:
-      context: .
+      context: ../../
       dockerfile: splinterd/Dockerfile-installed-${DISTRO}
       args:
         - REPO_VERSION=${REPO_VERSION}
@@ -59,7 +59,7 @@ services:
       ports:
         - 9000:80
       build:
-        context: .
+        context: ../../
         dockerfile: splinterd/api/openapi.dockerfile
 
   splinter-db:
