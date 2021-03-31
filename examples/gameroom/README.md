@@ -38,7 +38,7 @@ below.
    directory:
 
     ```
-    docker-compose -f examples/gameroom/docker-compose.yaml up --build
+    docker-compose --env-file $(pwd)/.env -f examples/gameroom/docker-compose.yaml up --build
     ```
 
     **Note:** To run Gameroom with experimental features enabled, set an
@@ -52,7 +52,7 @@ below.
    Alice's private key:
 
     ```
-    $ docker-compose -f examples/gameroom/docker-compose.yaml run generate-registry bash
+    $ docker-compose --env-file $(pwd)/.env -f examples/gameroom/docker-compose.yaml run generate-registry bash
     root@<container-id>:/# cat /registry/alice.priv
     <the private key value>
     root@<container-id>:/#
