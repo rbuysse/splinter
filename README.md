@@ -1,6 +1,6 @@
 <img alt="Splinter Logo" src="assets/splinter_logos_fulllogo_gradientblack.svg" width="500">
 
-# Splinter
+# Chinter
 
 Splinter is a privacy-focused platform for distributed applications that
 provides a blockchain-inspired networking environment for communication and
