@@ -5,6 +5,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  slack-channel: 'alerts'
 
 concurrency:
   group: ${{ github.ref }}
@@ -24,60 +25,114 @@ jobs:
         run: curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | sudo bash -s -- --to /usr/local/bin
 
       - name: Lint Gameroom Client
-        run: just ci-lint-client
+        run: exit 1
 
-  lint_splinter:
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
+      - name: Notify Slack Failed
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,author,job
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-      - name: Display envvars
-        run: env
+  # lint_splinter:
+  #   runs-on: ubuntu-18.04
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: Install Just
-        run: curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | sudo bash -s -- --to /usr/local/bin
+  #     - name: Display envvars
+  #       run: env
 
-      - name: Run Lint/Clippy on Splinter
-        run: just ci-lint-splinter
+  #     - name: Install Just
+  #       run: curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | sudo bash -s -- --to /usr/local/bin
 
-  unit_test_splinter:
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
+  #     - name: Run Lint/Clippy on Splinter
+  #       run: exit 1
 
-      - name: Display envvars
-        run: env
+  #     - name: Notify Slack Failed
+  #       if: failure()
+  #       uses: voxmedia/github-action-slack-notify-build@v1
+  #       with:
+  #         message_id: ${{ steps.slack.outputs.message_id }}
+  #         channel: ${{ env.slack-channel }}
+  #         status: Lint Splinter Failed
+  #         color: danger
+  #       env:
+  #         SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
-      - name: Install Just
-        run: curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | sudo bash -s -- --to /usr/local/bin
+  # unit_test_splinter:
+  #   runs-on: ubuntu-18.04
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: Unit Test Splinter
-        run: just ci-test
+  #     - name: Display envvars
+  #       run: env
 
-  gameroom_tests:
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
+  #     - name: Install Just
+  #       run: curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | sudo bash -s -- --to /usr/local/bin
 
-      - name: Display envvars
-        run: env
+  #     - name: Unit Test Splinter
+  #       run: just ci-test
 
-      - name: Install Just
-        run: curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | sudo bash -s -- --to /usr/local/bin
+  #     - name: Notify Slack Failed
+  #       if: failure()
+  #       uses: voxmedia/github-action-slack-notify-build@v1
+  #       with:
+  #         message_id: ${{ steps.slack.outputs.message_id }}
+  #         channel: ${{ env.slack-channel }}
+  #         status: Unit Test Splinter Failed
+  #         color: danger
+  #       env:
+  #         SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
-      - name: Gameroom Tests
-        run: just ci-test-gameroom
+  # gameroom_tests:
+  #   runs-on: ubuntu-18.04
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-  gameroom_ui_tests:
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
+  #     - name: Display envvars
+  #       run: env
 
-      - name: Display envvars
-        run: env
+  #     - name: Install Just
+  #       run: curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | sudo bash -s -- --to /usr/local/bin
 
-      - name: Install Just
-        run: curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | sudo bash -s -- --to /usr/local/bin
+  #     - name: Gameroom Tests
+  #       run: just ci-test-gameroom
 
-      - name: Gameroom UI Tests
-        run: just ci-test-gameroom-ui
+  #     - name: Notify Slack Failed
+  #       if: failure()
+  #       uses: voxmedia/github-action-slack-notify-build@v1
+  #       with:
+  #         message_id: ${{ steps.slack.outputs.message_id }}
+  #         channel: ${{ env.slack-channel }}
+  #         status: Gameroom Tests Failed
+  #         color: danger
+  #       env:
+  #         SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+  # gameroom_ui_tests:
+  #   runs-on: ubuntu-18.04
+  #   steps:
+  #     - uses: actions/checkout@v2
+
+  #     - name: Display envvars
+  #       run: env
+
+  #     - name: Install Just
+  #       run: curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | sudo bash -s -- --to /usr/local/bin
+
+  #     - name: Gameroom UI Tests
+  #       run: just ci-test-gameroom-ui
+
+  #     - name: Notify Slack Failed
+  #       if: failure()
+  #       uses: voxmedia/github-action-slack-notify-build@v1
+  #       with:
+  #         message_id: ${{ steps.slack.outputs.message_id }}
+  #         channel: ${{ env.slack-channel }}
+  #         status: Gameroom UI Tests Failed
+  #         color: danger
+  #       env:
+  #         SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
